@@ -1,0 +1,32 @@
+{
+  "name": "liqd-stats",
+  "description": "Stats Library",
+  "version": "0.0.1",
+  "author": "radixxko",
+  "contributors": [
+    "Ketchp"
+  ],
+  "license": "MIT",
+  "main": "lib/stats.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "test": "nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/radixxko/liqd-stats.git"
+  },
+  "keywords": [
+    "stats",
+    "liqd"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "coveralls": "^3.0.4",
+    "mocha": "^5.0.4",
+    "nyc": "^14.1.1"
+  }
+}
