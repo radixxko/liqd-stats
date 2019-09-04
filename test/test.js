@@ -6,7 +6,7 @@ function simulate( interval, samples, min, max )
 {
     let end = Date.now(), start = end - interval, tick = ( end - start ) / samples;
 
-    const stats = new Stats( 10, ...INTERVALS );
+    const stats = new Stats( INTERVALS );
 
     for( let i = 0; i < samples; ++i )
     {
