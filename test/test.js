@@ -25,44 +25,13 @@ function simulate( interval, samples, min, max )
             max : stats.max( interval ),
             avg : stats.avg( interval ),
             mdn : stats.mdn( interval ),
-            sum : stats.sum( interval )
+            sum : stats.sum( interval ),
+            pvl : stats.p_interval( interval, 0.05 )
         }
     }
 
     console.log( result );
 }
 
-simulate( 1000, 10, 10, 100 );
+simulate( 10000, 200, 10, 100 );
 
-/*
-function simulate(samples, min, max, val_bucket_size, time_bucket_size, history_time, tick, interval)
-{
-    let start = Date.now()
-
-    const stats = new Stats(history_time, time_bucket_size, val_bucket_size);
-
-    result = {};
-
-    for(let i = 0; i < samples; i++)
-    {
-        stats.push(min + Math.random() * ( max - min ), start + i * tick - Math.random()*45);
-    
-        if(i % 7 == 0)
-        {    
-            result =
-            {
-                cnt : stats.cnt( interval ),
-                min : stats.min( interval ),
-                max : stats.max( interval ),
-                avg : stats.avg( interval ),
-                mdn : stats.mdn( interval ),
-                sum : stats.sum( interval )
-            };
-            console.log(result);
-        }
-    }
-
-}
-
-simulate(45, 150, 600, 25, 100, 400, 30, 200);
-*/
