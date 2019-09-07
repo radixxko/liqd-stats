@@ -33,5 +33,5 @@ function simulate( interval, samples, min, max )
     console.log( result );
 }
 
-simulate( 10000, 200, 10, 100 );
+simulate( 1000, 200, 10, 100 );
 
