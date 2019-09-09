@@ -13,7 +13,9 @@ function simulate( interval, samples, min, max )
         stats.push( min + Math.random() * ( max - min ), start + i * tick );
         //console.log(stats.intervals[0]);
     }
-
+    console.log( stats.intervals[0].buckets);
+    console.log( stats.intervals[1].buckets);
+    console.log( stats.intervals[3].buckets);
     let result = {};
 
     for( let interval of INTERVALS )
@@ -26,12 +28,11 @@ function simulate( interval, samples, min, max )
             avg : stats.avg( interval ),
             mdn : stats.mdn( interval ),
             sum : stats.sum( interval ),
-            pvl : stats.p_interval( interval, 0.05 )
+            //pvl : stats.p_interval( interval, 0.05 )
         }
     }
 
     console.log( result );
 }
 
-simulate( 1000, 200, 10, 100 );
-
+simulate( 10000, 20000, 10, 100 );
