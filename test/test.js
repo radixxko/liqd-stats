@@ -1,17 +1,40 @@
-'use strict';
-const fs = require('fs');
+const Stats = require('../lib/stats');
 
-describe( 'Tests', ( done ) =>
+const INTERVALS = [ 1000, 5 * 1000, 15 * 1000, 60 * 1000, 5 * 60 * 1000 ];
+
+function simulate( interval, samples, min, max )
 {
-    var files = fs.readdirSync( dirname + '/tests' );
+    let end = Date.now(), start = end - interval, tick = ( end - start ) / samples;
 
-    for( let file of files )
+    const stats = new Stats( INTERVALS );
+
+    for( let i = 0; i < samples; ++i )
     {
-        if( !file.match(/.js$/) ){ continue; }
-
-        describe( file, () =>
-        {
-            require( dirname + '/tests/' + file );
-        });
+        stats.push( min + Math.random() * ( max - min ), start + i * tick );
+        //console.log(stats.intervals[0]);
     }
-});
+    console.log( stats.intervals[0].buckets);
+    console.log( stats.intervals[1].buckets);
+    console.log( stats.intervals[3].buckets);
+    let result = {};
+
+    for( let interval of INTERVALS )
+    {
+        result[interval] =
+        {
+            cnt  : stats.cnt( interval ),
+            min  : stats.min( interval ),
+            max  : stats.max( interval ),
+            avg  : stats.avg( interval ),
+            mdn  : stats.mdn( interval ),
+            sum  : stats.sum( interval ),
+            Mdn  : stats.pMin( interval, 0.5),
+            pMin : stats.pMin( interval, 0.05 ),
+            pMax : stats.pMax( interval, 0.05 )
+        }
+    }
+
+    console.log( result );
+}
+
+simulate( 10000, 20000, 10, 100 );
