@@ -3,15 +3,15 @@ const fs = require('fs');
 
 describe( 'Tests', ( done ) =>
 {
-	var files = fs.readdirSync( __dirname + '/tests' );
+    var files = fs.readdirSync( dirname + '/tests' );
 
-	for( let file of files )
-	{
-		if( !file.match(/\.js$/) ){ continue; }
+    for( let file of files )
+    {
+        if( !file.match(/.js$/) ){ continue; }
 
-		describe( file, () =>
-		{
-			require( __dirname + '/tests/' + file );
-		});
-	}
+        describe( file, () =>
+        {
+            require( dirname + '/tests/' + file );
+        });
+    }
 });
