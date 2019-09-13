@@ -1,6 +1,7 @@
 const assert = require('assert');
 const Stats = require('../../lib/stats');
 
+const RUNS = 1000;
 const INTERVALS =
 [
     100 + Math.ceil( Math.random() * 60 * 1000 ),
@@ -10,17 +11,20 @@ const INTERVALS =
 
 it('should find min - not timeouted', function()
 {
-    let stats = new Stats( INTERVALS ),
-        start = Date.now(), time, max = -Infinity;
-
-    for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 1000 ))
+    for( let run = 0; run < RUNS; ++run )
     {
-        let value = Math.random() * 100;
+        let stats = new Stats( INTERVALS ),
+            start = Date.now(), time, max = -Infinity;
 
-        if( value > max ){ max = value; }
+        for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 1000 ))
+        {
+            let value = Math.random() * 100;
 
-        stats.push( value, time );
+            if( value > max ){ max = value; }
+
+            stats.push( value, time );
+        }
+
+        assert.strictEqual( max, stats.max( INTERVALS[0] ));
     }
-
-    assert.strictEqual( max, stats.max( INTERVALS[0] ));
 });
