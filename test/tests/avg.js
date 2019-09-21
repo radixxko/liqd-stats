@@ -9,22 +9,29 @@ const INTERVALS =
     50 + Math.ceil( Math.random() * 60 * 100 )
 ];
 
-it('should find max - not expired', function()
+function almostEqual(a, b, precision)
+{
+  return Math.abs(a - b) < precision;
+}
+
+it('should find sum - not expired', function()
 {
     for( let run = 0; run < RUNS; ++run )
     {
         let stats = new Stats( INTERVALS ),
-            start = Date.now(), time, max = -Infinity;
+            start = Date.now(), time,
+            sum = 0, count = 0;
 
         for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 1000 ))
         {
             let value = Math.random() * 100;
 
-            if( value > max ){ max = value; }
+            sum += value;
+            ++count;
 
             stats.push( value, time );
         }
 
-        assert.strictEqual( max, stats.max( INTERVALS[0] ));
+        assert.ok( almostEqual( sum / count , stats.avg( INTERVALS[0] ), 0.000000001 ) );
     }
 });

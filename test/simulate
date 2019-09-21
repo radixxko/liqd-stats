@@ -1,0 +1,113 @@
+/*const Stats = require('../lib/stats');
+
+const INTERVALS = [ 1000, 5 * 1000, 15 * 1000, 60 * 1000, 5 * 60 * 1000 ];
+
+function simulate( interval, samples, min, max )
+{
+    let end = Date.now(), start = end - interval, tick = ( end - start ) / samples;
+
+    const stats = new Stats( INTERVALS );
+
+    for( let i = 0; i < samples; ++i )
+    {
+        stats.push( min + Math.random() * ( max - min ), start + i * tick );
+        //console.log(stats.intervals[0]);
+    }
+    console.log( stats.intervals[0].buckets);
+    console.log( stats.intervals[3].buckets);
+    let result = {};
+
+    for( let interval of INTERVALS )
+    {
+        result[interval] =
+        {
+            cnt  : stats.cnt( interval ),
+            min  : stats.min( interval ),
+            max  : stats.max( interval ),
+            avg  : stats.avg( interval ),
+            mdn  : stats.mdn( interval ),
+            sum  : stats.sum( interval ),
+            Mdn  : stats.pMin( interval, 0.5),
+            pMin : stats.pMin( interval, 0.05 ),
+            pMax : stats.pMax( interval, 0.05 )
+        }
+    }
+
+    console.log( result );
+}
+
+simulate( 100000, 2000000, 10, 100 );
+*/
+
+/*
+const Stats = require('../lib/stats');
+
+const RUNS = 10000;
+const INTERVALS =
+[
+    100 + Math.ceil( Math.random() * 60 * 1000 ),
+    200 + Math.ceil( Math.random() * 60 * 10000 ),
+    50 + Math.ceil( Math.random() * 60 * 100 )
+];
+
+for( let run = 0; run < RUNS; ++run )
+{
+    let stats = new Stats( INTERVALS ),
+        start = Date.now(), time, max = -Infinity;
+
+    for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 1000 ))
+    {
+      let value = Math.random() * 100;
+      stats.push( value, time );
+    }
+
+}
+*/
+
+'use strict'
+const assert = require('assert');
+const Stats = require('../lib/stats');
+
+function almostEqual(a, b, precision)
+{
+  return Math.abs(a - b) < precision;
+}
+
+const RUNS = 100;
+const INTERVALS =
+[
+    100 + Math.ceil( Math.random() * 60 * 1000 ),
+    200 + Math.ceil( Math.random() * 60 * 10000 ),
+    50 + Math.ceil( Math.random() * 60 * 100 )
+];
+
+for( let run = 0; run < RUNS; ++run )
+{
+
+    let stats = new Stats( INTERVALS ),
+        start = Date.now(), time, count = 0,
+        values = new Array();
+
+    for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 100 ))
+    {
+        let value = Math.random() * 100;
+        values.push(value);
+        ++count;
+
+        stats.push( value, time );
+    }
+
+    values.sort( (a,b) => a - b );
+    if( !almostEqual( values[Math.floor(count * 0.15)],
+                            stats.pMin( INTERVALS[0] , 0.15),
+                            stats.value_interval ))
+      {
+        for(let value of values)
+        {
+          console.log(value);
+        }
+        console.log(stats.testing( INTERVALS[0] , 0.15));
+        console.log(values[Math.floor(count * 0.15)]);
+        console.log(stats.value_interval);
+      }
+}

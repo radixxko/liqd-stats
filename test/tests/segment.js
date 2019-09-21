@@ -21,7 +21,5 @@ it('should return default initializer value on expired index', function()
     segment[0].cnt = 5;
     //segment[100];
 
-    console.log( initializer(0), segment[0] );
-
     assert.deepStrictEqual( initializer(0), segment[0] );
 });

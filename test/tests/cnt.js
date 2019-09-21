@@ -9,22 +9,22 @@ const INTERVALS =
     50 + Math.ceil( Math.random() * 60 * 100 )
 ];
 
-it('should find max - not expired', function()
+it('should find cnt - not expired', function()
 {
     for( let run = 0; run < RUNS; ++run )
     {
         let stats = new Stats( INTERVALS ),
-            start = Date.now(), time, max = -Infinity;
+            start = Date.now(), time, count = 0;
 
         for( time = start; time < start + INTERVALS[0]; time += Math.ceil( Math.random() * INTERVALS[0] / 1000 ))
         {
             let value = Math.random() * 100;
 
-            if( value > max ){ max = value; }
+            ++count;
 
             stats.push( value, time );
         }
 
-        assert.strictEqual( max, stats.max( INTERVALS[0] ));
+        assert.strictEqual( count, stats.cnt( INTERVALS[0] ));
     }
 });
