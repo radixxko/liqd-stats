@@ -24,7 +24,7 @@ it('should simulate values - expired', function()
 
         for( let time = start; time < end; time += Math.round( Math.random() * INTERVALS[2] / 100 ))
         {
-            ++value;
+            run === 0 ? ( value = Math.random() * 100 ) : ++value;
 
             stats.push( value, time );
             full.push( value, time );
@@ -118,7 +118,7 @@ it('should find pMin - expired', function()
 
                 //console.log( interval, percentile, pMin, fMin );
 
-                //assert.ok( almostEqual( pMin, fMin, 10 ));
+                assert.ok( almostEqual( pMin, fMin, 10 ));
             }
         }
     }

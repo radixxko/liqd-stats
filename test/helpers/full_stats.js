@@ -49,7 +49,7 @@ module.exports = class FullStats
 
     _nth_value( polling_interval, timestamp , percentile, direction = 1 )
     {
-        let values = this.cache.get( polling_interval + ':' + timestamp + ':' + direction );
+        let values = this.cache.get( polling_interval + ':' + timestamp );
 
         if( !values )
         {
@@ -63,8 +63,10 @@ module.exports = class FullStats
                 }
             }
 
-            this.cache.set( polling_interval + ':' + timestamp + ':' + direction, values.sort(( a, b ) => direction * ( a - b )));
+            this.cache.set( polling_interval + ':' + timestamp, values );
         }
+
+        values.sort(( a, b ) => direction * ( a - b ));
 
         return values.length ? values[Math.floor( values.length * percentile - 0.0000000001 )] : undefined;
     }
