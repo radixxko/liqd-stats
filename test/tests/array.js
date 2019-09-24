@@ -1,5 +1,5 @@
 const assert = require('assert');
-const ArraySegment = require('../../lib/array_segment');
+const { ArraySegment } = require('../../lib/array');
 
 it('should return default initializer value on expired index', function()
 {
@@ -19,7 +19,7 @@ it('should return default initializer value on expired index', function()
     let segment = new ArraySegment( 10, initializer );
 
     segment[0].cnt = 5;
-    //segment[100];
+    segment[100];
 
     assert.deepStrictEqual( initializer(0), segment[0] );
 });
