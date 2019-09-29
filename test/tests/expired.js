@@ -31,6 +31,7 @@ it('should simulate values - expired', function()
         }
 
         Simulations.push({ stats, full, timestamp: end });
+        //console.log(stats.polling_intervals[0].history);
     }
 })
 .timeout( 60000 );

@@ -15,8 +15,8 @@ describe( 'Tests', ( done ) =>
     {
         //if( !file.match(/.js$/) || ![ 'max.js', 'min.js', 'cnt.js', 'sum.js', 'avg.js', 'mdn.js' ].includes( file )){ continue; }
         //if( !file.match(/.js$/) || ![ 'mdn.js' ].includes( file )){ continue; }
-        //if( !file.match(/.js$/) || ![ 'not_expired.js', 'expired.js', 'performance.js' ].includes( file )){ continue; }
-        if( !file.match(/.js$/)){ continue; }
+        if( !file.match(/.js$/) || [ 'performance.js' ].includes( file )){ continue; }
+        //if( !file.match(/.js$/)){ continue; }
 
         describe( file, () =>
         {
