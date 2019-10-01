@@ -26,7 +26,9 @@ it('should simulate values - expired', function()
         {
             run === 0 ? ( value = Math.random() * 100 ) : ++value;
 
+            //console.log( value );
             stats.push( value, time );
+            //console.log( value );
             full.push( value, time );
         }
 

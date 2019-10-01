@@ -99,6 +99,7 @@ it('should find mdn - not expired', function()
             let pMdn = simulation.stats.mdn( interval, simulation.timestamp );
             let fMdn = simulation.full.mdn( interval, simulation.timestamp );
 
+            console.log( pMdn, fMdn, simulation.stats.polling_intervals[0].time_intervals[ simulation.timestamp - 3 ].value_intervals.bucket_size );
             assert.ok( almostEqual( pMdn, fMdn, 5 ));
         }
     }
