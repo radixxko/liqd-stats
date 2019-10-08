@@ -24,30 +24,22 @@ function simple_initializer( index )
         });
 }
 
-function default_getter( from, to )
+function default_getter( from, to, bucket, current )
 {
-    return (
-        {
-          from,
-          to,
-          min  :  Infinity,
-          max  : -Infinity,
-          cnt  :  0,
-          sum  :  0
-        });
-}
-
-function merger( bucket_1, bucket_2 )
-{
-    return (
-        {
-            from  :   Math.min( bucket_1.from, bucket_2.from ),
-            to    :   Math.max( bucket_1.to, bucket_2.to ),
-            min   :   Math.min( bucket_1.min, bucket_2.min ),
-            max   :   Math.max( bucket_1.max, bucket_2.max ),
-            cnt   :   bucket_1.cnt + bucket_2.cnt,
-            sum   :   bucket_1.sum + bucket_2.sum
-        });
+    return current ? Object.assign( current, 
+    {
+        min : Math.min( bucket.min, current.min ),
+        max : Math.max( bucket.max, current.max ),
+        cnt : bucket.cnt + current.cnt,
+        sum : bucket.sum + current.sum
+    }) :
+    ({
+        from, to,
+        min : bucket ? bucket.min : Infinity,
+        max : bucket ? bucket.max : -Infinity,
+        cnt : bucket ? bucket.cnt : 0,
+        sum : bucket ? bucket.sum : 0
+    })
 }
 
 function updateInterval( interval, value )
@@ -66,7 +58,7 @@ describe( "SparseBuckets", () =>
             bucket_count = 5,
             RUNS = 1000;
 
-        let buckets = new SparseBuckets( default_getter, merger, bucket_size, bucket_count);
+        let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
         let values  = [];
 
         for(let run = 0; run < RUNS; ++run)
