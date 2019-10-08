@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 
-global.almostEqual = function( a, b, epsilon = 0.0000000001 )
+global.almostEqual = function( a, b, epsilon = 0.0000001 )
 {
     return Math.abs( a - b ) < epsilon;
 }

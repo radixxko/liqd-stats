@@ -26,7 +26,7 @@ function simple_initializer( index )
 
 function default_getter( from, to, bucket, current )
 {
-    return current ? Object.assign( current, 
+    return current ? Object.assign( current,
     {
         min : Math.min( bucket.min, current.min ),
         max : Math.max( bucket.max, current.max ),
@@ -90,15 +90,15 @@ describe( "SparseBuckets", () =>
         }
 
     });
-/*
+
     it( "Should store value buckets - multiple recalculatings", () => {
         let bucket_size = 1,
             bucket_count = 13,
             RUNS = 10000;
 
-        for( let density of [0.001, 1, 10, 100, 1000] )
+        for( let density of [1, 2**3, 2**5, 2**10] )
         {
-            let buckets = new SparseBuckets( default_getter, merger, bucket_size, bucket_count);
+            let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
             let values  = [];
 
             for(let run = 0; run < RUNS; ++run)
@@ -113,12 +113,12 @@ describe( "SparseBuckets", () =>
 
             for(let i = 0; i < bucket_count; ++i)
             {
-                expected[ i ] = default_getter( i * bucket_size, ( i + 1 ) * bucket_size );
+                expected[ i ] = default_getter( i * buckets.bucket_size, ( i + 1 ) * buckets.bucket_size );
             }
 
             for(let value of values)
             {
-                updateInterval( expected[ Math.floor( value / bucket_size ) ], value );
+                updateInterval( expected[ Math.floor( value / buckets.bucket_size ) ], value );
             }
 
             for(let i = 0; i < bucket_count; ++i)
@@ -131,7 +131,7 @@ describe( "SparseBuckets", () =>
         }
 
     });
-*/
+
 });
 
 
