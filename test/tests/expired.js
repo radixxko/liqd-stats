@@ -2,7 +2,7 @@ const assert = require('assert');
 const Stats = require('../../lib/stats');
 const FullStats = require('../helpers/full_stats');
 
-const RUNS = 5;
+const RUNS = 2;
 const INTERVALS =
 [
     50 + Math.ceil( Math.random() * 25 ),
@@ -24,7 +24,7 @@ it('should simulate values - expired', function()
 
         for( let time = start; time < end; time += Math.round( Math.random() * INTERVALS[2] / 100 ))
         {
-            run === 0 ? ( value = Math.random() * 100 ) : ++value;
+            run === 0 ? ( value = ( Math.random() - 0.5 ) * 200 ) : ++value;
 
             //console.log( value );
             stats.push( value, time );
@@ -32,18 +32,55 @@ it('should simulate values - expired', function()
             full.push( value, time );
         }
 
-        Simulations.push({ stats, full, timestamp: end });
+        Simulations.push({ stats, full, timestamp: end ,start: start });
         //console.log(stats.polling_intervals[0].history);
     }
 })
 .timeout( 60000 );
 
-/*
+
 it('should store history', function()
 {
+    for( let simulation of Simulations )
+    {
+        for( let interval of INTERVALS)
+        {
+            for( let timestamp = simulation.start + Math.floor( 1000 * interval / 10 ); timestamp < simulation.timestamp - interval * 1000; timestamp += Math.floor( 1000 * interval / 10 ) )
+            {
+                let actual = simulation.stats.min( interval, timestamp ),
+                    expected = simulation.full.min( interval, timestamp );
+                assert.strictEqual( actual,expected );
 
-})
+                actual = simulation.stats.max( interval, timestamp );
+                expected = simulation.full.max( interval, timestamp );
+                assert.strictEqual( actual,expected );
+
+                actual = simulation.stats.cnt( interval, timestamp );
+                expected = simulation.full.cnt( interval, timestamp );
+                assert.strictEqual( actual,expected );
+
+                actual = simulation.stats.sum( interval, timestamp );
+                expected = simulation.full.sum( interval, timestamp );
+                assert.ok( almostEqual( actual,expected ));
+/*
+                actual = simulation.stats.mdn( interval, timestamp );
+                expected = simulation.full.mdn( interval, timestamp );
+                assert.ok( almostEqual( actual,expected,5 ));
+
+                actual = simulation.stats.pMin( interval, timestamp );
+                expected = simulation.full.pMin( interval, timestamp );
+                assert.ok( almostEqual( actual,expected,5 ));
+
+                actual = simulation.stats.pMax( interval, timestamp );
+                expected = simulation.full.pMax( interval, timestamp );
+                assert.ok( almostEqual( actual,expected,5 ));
 */
+
+            }
+        }
+    }
+})
+
 
 it('should find min - expired', function()
 {

@@ -14,6 +14,18 @@ function initializer( index )
         sub    :   []
     });
 }
+function index( value, bucket_size = 1, bucket_count = 10 ) // 0 - 2**32-2
+{
+    if(value >= 0)
+    {
+        return Math.floor( value / bucket_size) + bucket_count / 2;
+    }
+    else
+    {
+        return bucket_count / 2 - Math.floor( (-1) * value / bucket_size ) - 1;
+    }
+}
+
 
 function simple_initializer( index )
 {
@@ -55,55 +67,16 @@ describe( "SparseBuckets", () =>
 {
     it( "Should store value buckets - without recalculating", () => {
         let bucket_size = 1,
-            bucket_count = 5,
-            RUNS = 1000;
-
-        let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
-        let values  = [];
-
-        for(let run = 0; run < RUNS; ++run)
-        {
-            value = Math.random() * bucket_size * bucket_count;
-            values.push(value);
-            updateInterval( buckets[ buckets.index( value )] || buckets.init( value ), value );
-        }
-        values.sort( (a,b) => a - b );
-        let actual = buckets.values().sort( (a,b) => a.from - b.from ),
-            expected = new Array(bucket_count);
-
-        for(let i = 0; i < bucket_count; ++i)
-        {
-            expected[ i ] = default_getter( i * bucket_size, ( i + 1 ) * bucket_size );
-        }
-
-        for(let value of values)
-        {
-            updateInterval( expected[ Math.floor( value / bucket_size ) ], value );
-        }
-
-        for(let i = 0; i < bucket_count; ++i)
-        {
-            for(let property of Object.getOwnPropertyNames( expected[ i ] ))
-            {
-                assert.ok( almostEqual( expected[i][property], actual[i][property] ));
-            }
-        }
-
-    });
-
-    it( "Should store value buckets - multiple recalculatings", () => {
-        let bucket_size = 1,
-            bucket_count = 13,
-            RUNS = 10000;
-
-        for( let density of [1, 2**3, 2**5, 2**10] )
+            bucket_count = 10,
+            RUNS = 100;
+        for(let test of [0,1])
         {
             let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
             let values  = [];
 
             for(let run = 0; run < RUNS; ++run)
             {
-                value = Math.random() * bucket_size * bucket_count * density;
+                value = test ? (run - RUNS / 2 ) * ( bucket_count - 1 ) / RUNS : ( Math.random() - 0.5 ) * bucket_size * bucket_count;
                 values.push(value);
                 updateInterval( buckets[ buckets.index( value )] || buckets.init( value ), value );
             }
@@ -113,23 +86,69 @@ describe( "SparseBuckets", () =>
 
             for(let i = 0; i < bucket_count; ++i)
             {
-                expected[ i ] = default_getter( i * buckets.bucket_size, ( i + 1 ) * buckets.bucket_size );
+                expected[ i ] = default_getter( ( i - bucket_count / 2 ) * bucket_size, ( i - bucket_count / 2 + 1) * bucket_size );
             }
 
             for(let value of values)
             {
-                updateInterval( expected[ Math.floor( value / buckets.bucket_size ) ], value );
+                updateInterval( expected[ index( value, bucket_size, bucket_count ) ], value );
             }
 
-            for(let i = 0; i < bucket_count; ++i)
+            for(let i = 0,j = 0; i < bucket_count; ++i,++j)
             {
+                while(expected[i].cnt === 0){++i};
+                //console.log(expected[i], actual[j])
                 for(let property of Object.getOwnPropertyNames( expected[ i ] ))
                 {
-                    assert.ok( almostEqual( expected[i][property], actual[i][property] ));
+                    assert.ok( almostEqual( expected[i][property], actual[j][property] ));
                 }
             }
         }
+    });
 
+    it( "Should store value buckets - multiple recalculatings", () => {
+        let bucket_size = 1,
+            bucket_count = 10,
+            RUNS = 1000;
+
+        for(let test of [0,1])
+        {
+            for( let density of [1, 2**3, 2**5, 2**10] )
+            {
+                let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
+                let values  = [];
+
+                for(let run = 0; run < RUNS; ++run)
+                {
+                    value = test ? density * ( run - RUNS / 2 ) * ( bucket_count - 1 ) / RUNS : ( Math.random() - 0.5 ) * bucket_size * bucket_count * density;
+                    values.push(value);
+                    updateInterval( buckets[ buckets.index( value )] || buckets.init( value ), value );
+                }
+                values.sort( (a,b) => a - b );
+                let actual = buckets.values().sort( (a,b) => a.from - b.from ),
+                    expected = new Array(bucket_count);
+
+                for(let i = 0; i < bucket_count; ++i)
+                {
+                    expected[ i ] = default_getter( ( i - bucket_count / 2 ) * buckets.bucket_size, ( i - bucket_count / 2 + 1) * buckets.bucket_size );
+                }
+
+                for(let value of values)
+                {
+                    updateInterval( expected[ index( value, buckets.bucket_size, bucket_count ) ], value );
+                }
+
+                for(let i = 0,j = 0; i < bucket_count; ++i,++j)
+                {
+                    while(expected[i].cnt === 0){++i};
+                    //console.log(expected[i], actual[j])
+                    for(let property of Object.getOwnPropertyNames( expected[ i ] ))
+                    {
+                        assert.ok( almostEqual( expected[i][property], actual[j][property] ));
+                    }
+                }
+            }
+        }
     });
 
 });

@@ -24,7 +24,7 @@ it('should simulate values - not expired', function()
 
         for( let time = start; time < end; time += Math.round( Math.random() * INTERVALS[0] / 100 ))
         {
-            run === 0 ? ( value = Math.random() * 100 ) : --value;
+            run === 0 ? ( value = ( Math.random() - 0.5 ) * 200 ) : --value;
 
             stats.push( value, time );
             full.push( value, time );
