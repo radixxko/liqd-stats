@@ -120,7 +120,7 @@ describe( "SparseBuckets", () =>
 
                 for(let run = 0; run < RUNS; ++run)
                 {
-                    value = test ? density * ( run - RUNS / 2 ) * ( bucket_count - 1 ) / RUNS : ( Math.random() - 0.5 ) * bucket_size * bucket_count * density;
+                    value = test ? density * ( run - RUNS / 2 ) * ( bucket_count - 1 ) / RUNS : ( Math.random() - 0.5 ) * bucket_size * ( bucket_count - 1 ) * density;
                     values.push(value);
                     updateInterval( buckets[ buckets.index( value )] || buckets.init( value ), value );
                 }
@@ -128,20 +128,32 @@ describe( "SparseBuckets", () =>
                 let actual = buckets.values().sort( (a,b) => a.from - b.from ),
                     expected = new Array(bucket_count);
 
-                for(let i = 0; i < bucket_count; ++i)
+                expected[0] = default_getter( actual[0].from, actual[0].to )
+                for(let i = 1; i < bucket_count; ++i)
                 {
-                    expected[ i ] = default_getter( ( i - bucket_count / 2 ) * buckets.bucket_size, ( i - bucket_count / 2 + 1) * buckets.bucket_size );
+                    expected[ i ] = default_getter( expected[ i - 1 ].from + density, expected[ i - 1 ].to  + density);
                 }
 
                 for(let value of values)
                 {
-                    updateInterval( expected[ index( value, buckets.bucket_size, bucket_count ) ], value );
+                    for(let i = 0; i < bucket_count; ++i)
+                    {
+                        if( expected[i].from <= value && value < expected[i].to )
+                        {
+                            updateInterval( expected[ i ], value );
+                        }
+                        else if( value === 0 && expected[ i ].from === 0)
+                        {
+                            updateInterval( expected[ i ], value );
+                        }
+                    }
                 }
 
                 for(let i = 0,j = 0; i < bucket_count; ++i,++j)
                 {
-                    while(expected[i].cnt === 0){++i};
-                    //console.log(expected[i], actual[j])
+                    while( i < bucket_count && expected[i].cnt === 0){++i};
+                    if(i === bucket_count){break;}
+                    //console.log(expected[i], actual[j],i,j,buckets.middle)
                     for(let property of Object.getOwnPropertyNames( expected[ i ] ))
                     {
                         assert.ok( almostEqual( expected[i][property], actual[j][property] ));
@@ -150,6 +162,33 @@ describe( "SparseBuckets", () =>
             }
         }
     });
+
+    it( "Test for large numbers(larger than 2**32) and recalculatings", () => {
+        for(let test = 0; test < 100; ++test)
+        {
+            let bucket_size = 1,
+                value = 2**Math.ceil(16*Math.random()),
+                RUNS = 60;
+
+            for(let bucket_count of [5, 101, Infinity])
+            {
+                let buckets = new SparseBuckets( default_getter, bucket_size, bucket_count);
+
+                updateInterval( buckets[ buckets.index( value )] || buckets.init( value ), value );
+                for(let i = 0; i < RUNS; ++i)
+                {
+                    updateInterval( buckets[ buckets.index( value + 2**i )] || buckets.init( value + 2**i ), value + 2**i );
+                    updateInterval( buckets[ buckets.index( value - 2**i )] || buckets.init( value - 2**i ), value - 2**i );
+                }
+                let values = buckets.values().sort( (a,b) => a.from - b.from );
+                let cnt = values.length;
+
+                assert.deepStrictEqual(values[Math.floor(cnt / 2)-1].cnt, Math.max(RUNS - (bucket_count - 3)/2,30))
+            }
+
+        }
+
+    })
 
 });
 

@@ -117,7 +117,10 @@ it('should find pMin - not expired', function()
                 let pMin = simulation.stats.pMin( interval, percentile, simulation.timestamp );
                 let fMin = simulation.full.pMin( interval, percentile, simulation.timestamp );
 
-                //console.log( interval, percentile, pMin, fMin );
+                if( !almostEqual( pMin, fMin, 10 ))
+                {
+                console.log( interval, percentile, pMin, fMin );
+                }
 
                 assert.ok( almostEqual( pMin, fMin, 10 ));
             }
@@ -137,7 +140,10 @@ it('should find pMax - not expired', function()
                 let pMax = simulation.stats.pMax( interval, percentile, simulation.timestamp );
                 let fMax = simulation.full.pMax( interval, percentile, simulation.timestamp );
 
-                //console.log( interval, percentile, pMax, fMax );
+                if( !almostEqual( pMax, fMax, 10 ))
+                {
+                console.log( interval, percentile, pMax, fMax );
+                }
 
                 assert.ok( almostEqual( pMax, fMax, 10 ));
             }
